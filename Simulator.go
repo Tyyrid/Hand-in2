@@ -57,10 +57,9 @@ func sendMessage(chReceiverCheck chan string, chSenderCheck chan string, message
 
 		splitMessage(message);
 
-		// skal få fat i messageSlice fra splitmessage() og gennemløbe den. Og sende hver element én af gangen. Den skal opdatere timestamnp når den sender
+		// skal få fat i messageSlice fra splitmessage() og gennemløbe den. Og sende hver element én af gangen. Den skal opdatere timestamp til time.Now() når den sender
+		// skal også fortælle hvor mange beskeder den har sendt afsted, så recieveMessage() kan tjekke om den har modtaget alle
 
-
-		
 		//go receiveMessage() ?
 	} else {
 		//time-out
@@ -85,8 +84,9 @@ func checkIfAvailable(chReceiverCheck chan string, chSenderCheck chan string) {
 }
 
 func receiveMessage() {
-	//skal mellem andet tjekke om alt er i rette rækkefølge
-	////kalder på forskellige metoder om besken er OK - reassembleMessage()
+	// Tjekker om den har modtaget det antal beskeder den forventede
+	// samler de forskellige structs den har modtaget i et slice 
+	// kalder reassembleMessage(messageSlice)
 	//svarer til afsender channel, at den har modtaget/ikke modtaget besked
 	//måske lave en ekstra channel
 }
@@ -119,7 +119,7 @@ func reassembleMessage(messageSlice []Message) (reassembledMessage string) {
 	  for i, v := range messageSlice {
 	  strs[i] = v.messageString
 	  }
-	  reassembledMessage = strings.Join(strs, ", ")
+	  reassembledMessage = strings.Join(strs, " ")
 	  
 	//fmt.Println(reassembledMessage)
 	return reassembledMessage
