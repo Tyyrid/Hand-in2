@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"time"
+	"strings"
+	"sort"
 )
 
 
@@ -13,14 +15,14 @@ func main() {
 	//CHANNELS
 	chSenderCheck := make(chan string)
 	chReceiverCheck := make(chan string)
-	chSenderMessage := make(chan string)
-	chReceiverMessage := make(chan string)
+	//chSenderMessage := make(chan string)
+	//chReceiverMessage := make(chan string)
 
 	//MESSAGE
-	var message = new Message() {messageString}
+	message := Message{"Hej med dig", time.Now()}
 
     //GORUTINE
-	go sendMessage(chReceiverCheck, chSenderCheck)
+	go sendMessage(chReceiverCheck, chSenderCheck, message)
 	go checkIfAvailable(chReceiverCheck, chSenderCheck)
 
 
@@ -31,17 +33,19 @@ func main() {
 	//når chSenderCheck har modtager besked om at chReceiverCheck har fået beskeden, så stopper vi
 }
 
+
 type Message struct {
 	messageString   string
 	timestamp time.Time
 }
+
 
 // DEN DER SENDER BESKEDERNE
 func thread() {
 
 }
 
-func (message *Message) sendMessage(chReceiverCheck chan string, chSenderCheck chan string) {
+func sendMessage(chReceiverCheck chan string, chSenderCheck chan string, message Message) {
 	//Spørg modtager "er du klar?" - kalder på checkIfAvailable()
 	
 	//KALDER MODTAGER - ER DU KLAR?
@@ -51,13 +55,11 @@ func (message *Message) sendMessage(chReceiverCheck chan string, chSenderCheck c
 	receivedMessage := <-chSenderCheck
 	if receivedMessage == "Jeg er klar!" {
 
-		splitMessage();
+		splitMessage(message);
+
+		// skal få fat i messageSlice fra splitmessage() og gennemløbe den. Og sende hver element én af gangen. Den skal opdatere timestamnp når den sender
 
 
-
-
-		//splitter besked - splitMessage()
-		//sender besked
 		
 		//go receiveMessage() ?
 	} else {
@@ -89,17 +91,38 @@ func receiveMessage() {
 	//måske lave en ekstra channel
 }
 
-func splitMessage() { //array of structs?
-	//dele data i mindre stykker
-	//afsender
-	//skal returnere noget der er splittet
+func splitMessage(message Message) (messageSlice []Message) { //returnerer et array af structs
+	//Deler message på hvert mellemrum eller newline og laver nyt slice med dem
+	stringSlice := strings.Fields(message.messageString)
+	
+	// laver en ny struct for hvert element i stringSlice og tilføjer den struct til messageSlice
+	for i := 0; i < len(stringSlice); i++ {
+		message := Message{stringSlice[i], time.Now()}
+		messageSlice = append(messageSlice, message); 
+		// Til test // fmt.Println(message.messageString) 
+	}
 
+	return messageSlice
 }
 
-func reassembleMessage() {
-	//sætter data samen igen
-	//tjekker om den har fået alt
-	//modtager
+// Har ikke testet denne metode
+func reassembleMessage(messageSlice []Message) (reassembledMessage string) {
+	// Modtager messageSlice - et slice med alle de beskeder der er modtaget
+
+	// Sorterer dem i rigtig rækkefølge udfra timestamp
+	sort.Slice(messageSlice, func(i, j int) bool {
+		return messageSlice[i].timestamp.Before(messageSlice[j].timestamp)
+	  })
+
+	// Sætter beskederne sammen til én string 
+	  strs := make([]string, len(messageSlice))
+	  for i, v := range messageSlice {
+	  strs[i] = v.messageString
+	  }
+	  reassembledMessage = strings.Join(strs, ", ")
+	  
+	//fmt.Println(reassembledMessage)
+	return reassembledMessage
 }
 
 //lav to channels, som snakker med hinanden
