@@ -6,7 +6,7 @@ GG! We know our comments are in Danish, but we'll do better at the exam :)
 Our implementation makes use of a user-defined type Message struct, as our package we use struct to combine/group items of different types into a single type. So, our Message structs consist of a messageString of type string and a timestamp of type time.Time. To transmit our Message struct we first split the message into smaller packets, by using the method splitMessage(message). The method takes the message struct messageString, splits on whitespace and puts the new strings into a slice called stringSlice. Then we iterate through this slice and makes a new message struct for each element, and puts it into a new slice called messageSlice. Then, we iterate through the messageSlice and sends each struct over a channel called chSenderMessage. 
 
 **b) Does your implementation use threads or processes? Why is it not realistic to use threads?**
-Our implementation uses threads to simulate the TCP protocol. This is not a realistic implementation since threads run locally on a computer. The TCP protocol runs across a network where it can be subjected with failures as message loss and messages being received in a different order than it was sent.
+Our implementation uses threads to simulate the TCP protocol. This is not a realistic implementation since threads run locally on a computer. The TCP protocol runs across a network where it can be subjected to failures as message loss and messages being received in a different order than it was sent.
 
 
 **c) How do you handle message re-ordering?**
