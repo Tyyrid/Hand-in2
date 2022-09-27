@@ -125,11 +125,11 @@ func receiveMessage(chSenderMessage chan Message, messageCounter int, chSenderCh
 
 }
 
-func splitMessage(message Message) (messageSlice []Message) { //returnerer et slice af structs
-	//Deler message på hvert mellemrum eller newline og laver nyt slice med dem
+func splitMessage(message Message) (messageSlice []Message) {
+	// Deler message på hvert mellemrum eller newline og laver nyt slice med dem
 	stringSlice := strings.Fields(message.messageString)
 
-	// laver en ny struct for hvert element i stringSlice og tilføjer den struct til messageSlice
+	// Laver en ny struct for hvert element i stringSlice og tilføjer den struct til messageSlice
 	for i := 0; i < len(stringSlice); i++ {
 		message := Message{stringSlice[i], time.Now()}
 		messageSlice = append(messageSlice, message)
@@ -153,6 +153,5 @@ func reassembleMessage(messageSlice []Message) (reassembledMessage string) {
 	}
 	reassembledMessage = strings.Join(strs, " ")
 
-	//fmt.Println(reassembledMessage)
 	return reassembledMessage
 }
